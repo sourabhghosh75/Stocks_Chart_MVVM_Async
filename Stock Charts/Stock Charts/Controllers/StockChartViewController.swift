@@ -18,9 +18,10 @@ class StockChartViewController: UIViewController {
     override func viewDidLoad()  {
         super.viewDidLoad()
         
-        Task{
-            await stockListViewModel.populateStocks { [weak self] in
-                DispatchQueue.main.async {
+        Task {
+            
+            await self.stockListViewModel.populateStocks { [weak self] in
+               DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
                
@@ -29,7 +30,7 @@ class StockChartViewController: UIViewController {
         
         
     }
-    
+
     @IBAction func indexChangedOfSegment(_ sender: UISegmentedControl) {
         
         switch stockSegmentControl.selectedSegmentIndex {
