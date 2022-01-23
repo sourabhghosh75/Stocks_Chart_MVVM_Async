@@ -21,10 +21,20 @@ extension StockListViewModel {
        return  self.stocksViewModel[index]
     }
     
-    func populateStocks(completion:@escaping()->()) {
+    func populateStocks(completion:@escaping()->()) async {
         
+        do {
+            
+            let stocks = try await Webservice().loadAsync(resource: Stock.all)
+            self.stocksViewModel = stocks.map(StockViewModel.init)
+            completion()
+            
+        } catch {
+            
+            print(error)
+        }
         
-        Webservice().load(resouce: Stock.all) {  result  in
+        /*Webservice().load(resouce: Stock.all) {  result  in
             
             switch result {
                 
@@ -36,7 +46,7 @@ extension StockListViewModel {
                 print(error)
             }
             
-        }
+        }*/
       
     }
 }

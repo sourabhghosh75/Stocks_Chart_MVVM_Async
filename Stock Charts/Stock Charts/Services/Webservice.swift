@@ -30,6 +30,33 @@ struct Resource <T:Codable> {
 }
 class Webservice {
     
+    func loadAsync<T>(resource: Resource<T>) async throws -> [Stock] {
+        
+        var request = URLRequest(url: resource.url)
+        request.httpMethod = resource.httpmethod.rawValue
+        request.httpBody = resource.body
+        request.allHTTPHeaderFields = resource.header
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        let response = try? JSONDecoder().decode(QuoteResponse.self, from: data)
+        
+        if let response = response {
+            let result = response.quoteResponse
+            
+            let stocks = result.result
+            
+            return stocks
+            
+        }
+        else {
+            return []
+        }
+        
+    }
+    
     func load<T>(resouce: Resource<T>, completion: @escaping (Result<[Stock] ,NetworkError>) -> Void) {
         
         var request = URLRequest(url: resouce.url)
@@ -58,8 +85,10 @@ class Webservice {
                 
                 
             } else {
+                DispatchQueue.main.async {
+                    completion(.failure(.decodingError))
+                }
                 
-                completion(.failure(.decodingError))
             }
             
             

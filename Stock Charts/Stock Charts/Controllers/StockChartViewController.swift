@@ -15,11 +15,16 @@ class StockChartViewController: UIViewController {
     var stockListViewModel = StockListViewModel()
    // var stockType : StockType = .percent
     
-    override func viewDidLoad() {
+    override func viewDidLoad()  {
         super.viewDidLoad()
-
-        stockListViewModel.populateStocks { [weak self] in
-            self?.tableView.reloadData()
+        
+        Task{
+            await stockListViewModel.populateStocks { [weak self] in
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+               
+            }
         }
         
         
